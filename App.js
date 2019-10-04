@@ -9,21 +9,25 @@ import StopWatch from './components/StopWatch';
 let id = 0;
 
 class App extends Component {
-  constructor(props) {
-    super(props);
+  state = {
+    markers: [],
+    watchID: null
+  };
 
+  componentDidMount() {
     let watchID = navigator.geolocation.watchPosition(position => {
-      let distance = 0;
+      console.log(position);
 
+      let distance = 0;
       if (this.state.previousCoordinate) {
         distance =
           this.state.distance +
           haversine(this.state.previousCoordinate, position.coords, {
             unit: 'mile'
           });
-        this.distanceInfo.setState({ value: distance });
+        this.distanceInfo.setState({ value: distance.toFixed(2) + 'mi' });
       }
-      this.speedInfo.setState({ value: position.coords.speed });
+      this.speedInfo.setState({ value: position.coords.speed + 'mp/h' });
 
       let x = position.coords.heading;
       if ((x > 0 && x <= 23) || (x > 338 && x <= 360))
@@ -38,7 +42,6 @@ class App extends Component {
       else if (x > 248 && x <= 293) this.directionInfo.setState({ value: 'W' });
       else if (x > 293 && x <= 338)
         this.directionInfo.setState({ value: 'NW' });
-      console.log('hello', position);
       this.setState(
         {
           markers: [
@@ -49,45 +52,32 @@ class App extends Component {
             }
           ],
           previousCoordinate: position.coords,
-          distance
+          distance,
+          watchID
         },
         null,
-        { distanceFilter: 10 }
+        {
+          distanceFilter: 10,
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 1000
+        }
       );
     });
-    this.state = {
-      markers: [],
-      watchID,
-      showStopWatch: false
-    };
 
-    setInterval(() => {
-      this.distanceInfo.setState({ value: Math.random() * 100 });
+    setInterval = () => {
+      this.distanceInfo.setState({ value: Math.random() * 15 });
       this.speedInfo.setState({ value: Math.random() * 15 });
       this.directionInfo.setState({
         value: this.directionInfo.state === 'N' ? 'NW' : 'N'
-      });
-    }, 1000);
+      }),
+        1;
+    };
   }
 
-  // componentDidMount() {
-  //   navigator.geolocation.getCurrentPosition(
-  //     position => {
-  //       console.log('<<<<coords', position);
-  //       this.setState({
-  //         markers: position.coords.latitude,
-  //         markers: position.coords.longitude,
-  //         error: null
-  //       });
-  //     },
-  //     error => this.setState({ error: error.message }),
-  //     { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 }
-  //   );
+  // componentWillUnmount() {
+  //   navigator.geolocation.stopWatch(this.state.watchID);
   // }
-
-  componentWillUnmount() {
-    navigator.geolocation.stopWatch(this.state.watchID);
-  }
 
   render() {
     return (
@@ -108,11 +98,10 @@ class App extends Component {
             strokeWidth={5}
           />
         </MapView>
-        <View style={styles.ic1}>
+        {/* <View style={styles.ic1}>
           <StopWatch />
-        </View>
-
-        <View style={styles.ic1}>
+        </View> */}
+        <View style={styles.infoWrapper}>
           <RunInfoNumeric
             title="Distance"
             unit="mi"
@@ -136,21 +125,11 @@ class App extends Component {
 
 const styles = StyleSheet.create({
   infoWrapper: {
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    right: 0,
     flexDirection: 'row',
     flex: 1
   },
-  // ic1: {
-  //   backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  //   padding: 20
-  // },
   map: {
-    // ...StyleSheet.absoluteFillObject
-    height: 400,
-    width: 375
+    flex: 1
   }
 });
 export default App;

@@ -1,101 +1,88 @@
+/*This is an Example of Timer/Stopwatch in React Native */
 import React, { Component } from 'react';
+//import React in our project
 import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+//import all the required components
 import { Stopwatch, Timer } from 'react-native-stopwatch-timer';
+//importing library to use Stopwatch and Timer
 
-class StopWatch extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      timerStart: false,
-      stopwatchStart: false,
-      totalDuration: 90000,
-      timerReset: false,
-      stopwatchReset: false
-    };
-    this.toggleTimer = this.toggleTimer.bind(this);
-    this.resetTimer = this.resetTimer.bind(this);
-    this.toggleStopwatch = this.toggleStopwatch.bind(this);
-    this.resetStopwatch = this.resetStopwatch.bind(this);
-  }
+class App extends Component {
+  state = {
+    isTimerStart: false,
+    isStopwatchStart: false,
+    timerDuration: 90000,
+    resetTimer: false,
+    resetStopwatch: false
+  };
 
-  toggleTimer() {
-    this.setState({ timerStart: !this.state.timerStart, timerReset: false });
-  }
-
-  resetTimer() {
-    this.setState({ timerStart: false, timerReset: true });
-  }
-
-  toggleStopwatch() {
+  startStopStopWatch = () => {
     this.setState({
-      stopwatchStart: !this.state.stopwatchStart,
-      stopwatchReset: false
+      isStopwatchStart: !this.state.isStopwatchStart,
+      resetStopwatch: false
     });
-  }
+  };
+  resetStopwatch = () => {
+    this.setState({ isStopwatchStart: false, resetStopwatch: true });
+  };
 
-  resetStopwatch() {
-    this.setState({ stopwatchStart: false, stopwatchReset: true });
-  }
-
-  getFormattedTime(time) {
+  getFormattedTime = time => {
     this.currentTime = time;
-  }
+  };
 
   render() {
     return (
-      <View>
-        <Stopwatch
-          laps
-          msecs
-          start={this.state.stopwatchStart}
-          reset={this.state.stopwatchReset}
-          options={options}
-          getTime={this.getFormattedTime}
-        />
-        <TouchableHighlight onPress={this.toggleStopwatch}>
-          <Text style={{ fontSize: 30 }}>
-            {!this.state.stopwatchStart ? 'Start' : 'Stop'}
-          </Text>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={this.resetStopwatch}>
-          <Text style={{ fontSize: 30 }}>Reset</Text>
-        </TouchableHighlight>
-        <Timer
-          totalDuration={this.state.totalDuration}
-          msecs
-          start={this.state.timerStart}
-          reset={this.state.timerReset}
-          options={options}
-          handleFinish={handleTimerComplete}
-          getTime={this.getFormattedTime}
-        />
-        <TouchableHighlight onPress={this.toggleTimer}>
-          <Text style={{ fontSize: 30 }}>
-            {!this.state.timerStart ? 'Start' : 'Stop'}
-          </Text>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={this.resetTimer}>
-          <Text style={{ fontSize: 30 }}>Reset</Text>
-        </TouchableHighlight>
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <Stopwatch
+            laps
+            msecs
+            start={this.state.isStopwatchStart}
+            //To start
+            reset={this.state.resetStopwatch}
+            //To reset
+            options={options}
+            //options for the styling
+            getTime={this.getFormattedTime}
+          />
+          <TouchableHighlight onPress={this.startStopStopWatch}>
+            <Text style={{ fontSize: 20, marginTop: 10 }}>
+              {!this.state.isStopwatchStart ? 'START' : 'STOP'}
+            </Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={this.resetStopwatch}>
+            <Text style={{ fontSize: 20, marginTop: 10 }}>RESET</Text>
+          </TouchableHighlight>
+        </View>
+        <View
+          style={{
+            marginTop: 15,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        ></View>
       </View>
     );
   }
 }
 
-const handleTimerComplete = () => alert('custom completion function');
-
 const options = {
   container: {
-    backgroundColor: '#000',
+    backgroundColor: '#FF0000',
     padding: 5,
     borderRadius: 5,
-    width: 220
+    width: 200,
+    alignItems: 'center'
   },
   text: {
-    fontSize: 30,
+    fontSize: 25,
     color: '#FFF',
     marginLeft: 7
   }
 };
 
-export default StopWatch;
+export default App;
